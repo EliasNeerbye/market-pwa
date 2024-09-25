@@ -40,9 +40,8 @@ app.use(session({
 }));
 
 
-// Routes (Example route placeholders)
 app.use('/', (req, res) => {
-    res.send('Home Page'); // Example route handler
+    res.render('index', { title: 'Home' });
 });
 
 // 404 handler (Page not found)
