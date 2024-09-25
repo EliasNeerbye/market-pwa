@@ -9,7 +9,17 @@
     <body>
         <%- include('partials/header') %>
         <main>
-            
+            <section id="search">
+                <div id="searchDiv">
+                    <input type="text" name="searchInput" id="searchInput" placeholder="Search...">
+                </div>
+                <select name="tagSelect" id="tagSelect">
+                    <option value="tag">tag</option>
+                </select>
+            </section>
+            <section>
+                <a href="/addItem">Add a new item</a>
+            </section>
         </main>
     </body>
 </html>
