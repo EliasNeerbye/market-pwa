@@ -1,0 +1,95 @@
+main{
+    width: 50%;
+    height: 75%;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+form{
+    width: 100%;
+    height: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+#username{
+    display: block;
+    width: 50%;
+    background-color: #FFFFFF11;
+    border: 0;
+    padding: 10px 2.5px;
+    border-bottom: 2px solid;
+    color: black;
+}
+
+#username:focus, #password:focus{
+    outline: 0;
+}
+
+#pwdDiv{
+    width: 50%;
+    height: 25px;
+    background-color: #FFFFFF11;
+    border: 0;
+    padding: 5px 2.5px;
+    border-bottom: 2px solid;
+    color: black;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#pwdImgDiv{
+    width: 5%;
+    height: 25px;
+    display: flex;
+    justify-content: flex-end;
+    cursor: pointer;
+}
+
+#pwdImg{
+    max-width: 100%;
+    max-height: 100%;
+}
+
+#password{
+    background-color: transparent;
+    border: 0;
+    display: block;
+    width: 94%;
+    height: 100%;
+}
+
+button{
+    width: 30%;
+    background-color: black;
+    border: 2px solid;
+    color: plum;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 8px;
+    height: 12.5%;
+    transition-duration: 0.2s;
+}
+
+button:hover{
+    background-color: darkmagenta;
+    color: aliceblue;
+}
+
+p{
+    display: block;
+    width: 100%;
+    height: 10%;
+    text-align: center;
+    color: red;
+    font-weight: bold;
+    text-shadow: -1px 1px 1px black;
+}

@@ -17,6 +17,7 @@
     "express-fileupload": "^1.5.1",
     "express-session": "^1.18.0",
     "mongoose": "^8.6.3",
+    "serve-favicon": "^2.5.0",
     "validator": "^13.12.0"
   }
 }
