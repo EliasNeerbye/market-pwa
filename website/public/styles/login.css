@@ -93,3 +93,28 @@ p{
     font-weight: bold;
     text-shadow: -1px 1px 1px black;
 }
+
+/* Media Query for Mobile Responsiveness */
+@media (max-width: 1000px) {
+    main {
+        width: 90%; /* Increase main width for mobile */
+        padding: 20px; /* Add some padding for better spacing */
+    }
+
+    #username,
+    #password {
+        width: 100%; /* Full width for input fields */
+    }
+
+    #pwdDiv {
+        width: 100%; /* Full width for password container */
+    }
+
+    button {
+        width: 80%;
+    }
+
+    p {
+        font-size: 1rem; /* Adjust font size for smaller screens */
+    }
+}
