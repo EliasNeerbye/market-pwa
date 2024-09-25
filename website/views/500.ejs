@@ -4,12 +4,16 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title><%= title %></title>
-        <link rel="stylesheet" href="/styles/index.css">
+        <link rel="stylesheet" href="/styles/404500.css">
     </head>
     <body>
         <%- include('partials/header') %>
         <main>
-            
+            <div class="error-container">
+                <h1>500</h1>
+                <p>Sorry! Something went wrong on our end.</p>
+                <a href="/">Go back to Home</a>
+            </div>
         </main>
     </body>
 </html>
