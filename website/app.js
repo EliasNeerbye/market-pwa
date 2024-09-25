@@ -44,6 +44,7 @@ app.use(session({
 const User = require('./models/user');
 const Product = require('./models/product');
 const SalesLog = require('./models/saleslog');
+const Tag = require('./models/tag');
 
 app.get('/', (req, res) => {
     if (!req.session.user) {
@@ -69,6 +70,19 @@ app.get('/logout', (req, res) => {
     });
 });
 
+app.get('/addItem', (req,res) => {
+    if (!req.session.user){
+        return res.redirect('/login');
+    }
+    res.render('addItem', { title: 'Add Item', error: undefined });
+});
+
+app.get('/addTag', (req,res) => {
+    if (!req.session.user){
+        return res.redirect('/login');
+    }
+    res.render('addTag', { title: 'Add Tag', error: undefined });
+});
 
 app.post('/login/user', async (req, res) => {
     const { username, password } = req.body;
@@ -112,6 +126,43 @@ app.post('/login/user', async (req, res) => {
         });
     }
 });
+
+app.post('/tags/add', async (req, res) => {
+    const { tagNames } = req.body; // Retrieve the array of tag names
+
+    // Check if any tag names are provided
+    if (!tagNames || tagNames.length === 0) {
+        return res.render('addTag', { title: 'Add Tags', error: 'At least one tag name is required.' });
+    }
+
+    try {
+        // Create an array to hold the tags
+        const tagsToAdd = tagNames.map(tagName => ({
+            name: tagName.trim() // Trim whitespace from the tag name
+        }));
+
+        // Check for existing tags to prevent duplicates
+        const existingTags = await Tag.find({ name: { $in: tagsToAdd.map(tag => tag.name) } }).lean();
+        const existingTagNames = existingTags.map(tag => tag.name);
+
+        // Filter out tags that already exist
+        const newTags = tagsToAdd.filter(tag => !existingTagNames.includes(tag.name));
+
+        // Save new tags to the database
+        if (newTags.length > 0) {
+            await Tag.insertMany(newTags);
+        }
+
+        // Provide feedback on existing tags that were not added
+        const errorMsg = existingTagNames.length > 0 ? `Tags already exist: ${existingTagNames.join(', ')}` : null;
+
+        res.render('addTag', { title: 'Add Tags', error: errorMsg });
+    } catch (error) {
+        console.error('Error adding tags:', error);
+        res.render('addTag', { title: 'Add Tags', error: 'Error adding tags. Please try again.' });
+    }
+});
+
 
 // 404 handler (Page not found)
 app.use((req, res, next) => {

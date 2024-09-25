@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/styles/addTag.css">
+    <script>
+        function addTagInput() {
+            const tagContainer = document.getElementById('tagContainer');
+            const newInput = document.createElement('input');
+            newInput.type = 'text';
+            newInput.name = 'tagNames'; // Same name for grouping in array
+            newInput.placeholder = 'Enter Tag Name';
+            newInput.required = true;
+            tagContainer.appendChild(newInput);
+        }
+    </script>
+</head>
+<body>
+    <%- include('partials/header') %>
+    <main>
+        <h1>Add New Tags</h1>
+        <form action="/tags/add" method="post" id="addTagForm">
+            <div id="tagContainer">
+                <input type="text" name="tagNames" placeholder="Enter Tag Name" required>
+            </div>
+            <button type="button" onclick="addTagInput()">Add Another Tag</button>
+            <button type="submit">Add Tags</button>
+        </form>
+    </main>
+    <p id="errorMsg"><% if (error) { %><%= error %><% } %></p>
+</body>
+</html>

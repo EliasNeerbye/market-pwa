@@ -1,0 +1,57 @@
+body {
+    font-family: Arial, sans-serif; /* Font for the body */
+    background-color: #f9f9f9; /* Light background color */
+    color: #333; /* Dark text color for contrast */
+    margin: 0;
+    padding: 20px;
+}
+
+main {
+    width: 50%;
+    margin: auto;
+    background-color: white; /* White background for the form container */
+    padding: 20px; /* Padding around the form */
+    border-radius: 8px; /* Rounded corners for the container */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Subtle shadow effect */
+}
+
+h1 {
+    text-align: center; /* Centered heading */
+    margin-bottom: 20px; /* Space below heading */
+    color: darkmagenta; /* Color for the heading */
+}
+
+form {
+    display: flex; /* Flex layout for form elements */
+    flex-direction: column; /* Stack elements vertically */
+    gap: 15px; /* Space between elements */
+}
+
+input[type="text"] {
+    padding: 10px; /* Padding inside input fields */
+    border: 1px solid #ccc; /* Border around input fields */
+    border-radius: 4px; /* Rounded corners */
+    width: 100%; /* Full width of container */
+    box-sizing: border-box; /* Include padding in width */
+}
+
+button {
+    background-color: darkmagenta; /* Background color for buttons */
+    color: white; /* Text color for buttons */
+    padding: 10px; /* Padding for buttons */
+    border: none; /* No border */
+    border-radius: 4px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s; /* Transition for hover effect */
+}
+
+button:hover {
+    background-color: black; /* Darker background on hover */
+}
+
+#errorMsg {
+    color: red; /* Red color for error messages */
+    text-align: center; /* Center the error message */
+    font-weight: bold; /* Bold text for emphasis */
+    margin-top: 20px; /* Space above the error message */
+}
