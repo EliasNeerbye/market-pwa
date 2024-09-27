@@ -55,3 +55,8 @@ button:hover {
     font-weight: bold; /* Bold text for emphasis */
     margin-top: 20px; /* Space above the error message */
 }
+
+
+input{
+    margin-bottom: 5px;
+}
