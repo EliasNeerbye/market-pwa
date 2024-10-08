@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/styles/addItem.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+</head>
+<body>
+    <%- include('partials/header') %>
+    <main>
+        <h1>Add New Product</h1>
+        <form action="/products/add" method="post" id="addProductForm" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="name">Product Name:</label>
+                <input type="text" name="name" id="name" placeholder="Product Name" required>
+            </div>
+            <div class="form-group">
+                <label for="description">Product Description:</label>
+                <textarea name="description" id="description" placeholder="Product Description" rows="4"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="price">Price:</label>
+                <input type="number" name="price" id="price" placeholder="Price" value="10.00" required step="0.01">
+            </div>
+            <div class="form-group">
+                <label for="quantity">Quantity:</label>
+                <input type="number" name="quantity" id="quantity" placeholder="Quantity" value="1" required>
+            </div>
+            <div class="form-group">
+                <label for="owner">Owner:</label>
+                <select name="owner" id="owner">
+                    <option value="">Select Owner (Optional)</option>
+                    <% owners.forEach(function(owner) { %>
+                        <option value="<%= owner._id %>"><%= owner.name %></option>
+                    <% }); %>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="image">Upload Image:</label>
+                <input type="file" name="image" id="image" accept="image/*">
+            </div>
+            <div class="form-group">
+                <label for="tags">Tag:</label>
+                <select name="tags" id="tags">
+                    <option value="">Select Tag (Optional)</option>
+                    <% sentTags.forEach(function(tag) { %>
+                        <option value="<%= tag._id %>"><%= tag.name %></option>
+                    <% }); %>
+                </select>
+            </div>
+            <button type="submit">Add Product</button>
+        </form>
+        <div id="imagePreviewContainer">
+            <h2>Image Preview:</h2>
+            <img id="imagePreview" src="#" alt="Image Preview" style="display: none; max-width: 100%; margin-top: 20px;"/>
+        </div>
+    </main>
+    <p id="errorMsg"><% if (error) { %><%= error %><% } %></p>
+
+    <script>
+        document.getElementById('image').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            const imagePreview = document.getElementById('imagePreview');
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = 'block'; // Show the image preview
+                }
+                reader.readAsDataURL(file); // Convert the image file to a data URL
+            } else {
+                imagePreview.src = '#'; // Reset if no file is selected
+                imagePreview.style.display = 'none'; // Hide the image preview
+            }
+        });
+    </script>
+</body>
+</html>

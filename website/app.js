@@ -8,6 +8,7 @@ const fileUpload = require('express-fileupload'); // Optional file upload middle
 const path = require('path');
 require('dotenv').config();
 const favicon = require('serve-favicon');
+const { v4: uuidv4 } = require('uuid');
 
 const app = express();
 
@@ -46,12 +47,34 @@ const Product = require('./models/product');
 const SalesLog = require('./models/saleslog');
 const Tag = require('./models/tag');
 
-app.get('/', (req, res) => {
+app.get('/', async (req, res) => {
     if (!req.session.user) {
         return res.redirect('/login');
     }
-    res.render('index', { title: 'Home' });
+
+    try {
+        const tags = await Tag.find();
+        const sentTags = tags.map(tag => ({ username: tag.name, _id: tag._id }));
+
+        // Fetch products from the database
+        const products = await Product.find().populate('tags'); // Populate tags if necessary
+
+        // Get the selected tag ID from the query parameters
+        const selectedTagId = req.query.tagSelect;
+
+        // Check if a tag is selected for filtering
+        const filteredProducts = selectedTagId ? products.filter(product => 
+            product.tags.map(tag => tag.toString()).includes(selectedTagId)
+        ) : products;
+
+        // Send tags and filtered products to the EJS template
+        res.render('index', { title: 'Home', sentTags, products: filteredProducts, selectedTagId });
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        res.status(500).send('Error fetching data');
+    }
 });
+
 
 app.get('/login', (req, res) => {
     if (req.session.user) {
@@ -70,11 +93,22 @@ app.get('/logout', (req, res) => {
     });
 });
 
-app.get('/addItem', (req,res) => {
+app.get('/addItem', async (req,res) => {
     if (!req.session.user){
         return res.redirect('/login');
     }
-    res.render('addItem', { title: 'Add Item', error: undefined });
+    const allOwners = await User.find();
+    let owners = [];
+    allOwners.forEach(element => {
+        owners.push({ name: element.username, _id: element._id });
+    });
+
+    const tags = await Tag.find();
+    let sentTags = [];
+    tags.forEach(element => {
+        sentTags.push({ name: element.name, _id: element._id });
+    });
+    res.render('addItem', { title: 'Add Item', error: undefined, owners, sentTags });
 });
 
 app.get('/addTag', (req,res) => {
@@ -161,6 +195,65 @@ app.post('/tags/add', async (req, res) => {
         console.error('Error adding tags:', error);
         res.render('addTag', { title: 'Add Tags', error: 'Error adding tags. Please try again.' });
     }
+});
+
+app.post('/products/add', async (req, res) => {
+    // Check if user is logged in
+    if (!req.session.user) {
+        return res.redirect('/');
+    }
+
+    try {
+        // Check if there are files and extract the image file
+        if (!req.files || Object.keys(req.files).length === 0) {
+            return res.status(400).send('No files were uploaded.');
+        }
+
+        const imageFile = req.files.image; // Assuming the input name is 'image'
+        
+        // Generate a unique filename by appending a UUID
+        const uniqueFileName = `${uuidv4()}_${imageFile.name}`;
+        const uploadPath = path.join(__dirname, 'public', 'uploads', uniqueFileName);
+
+        // Move the uploaded file to the specified directory
+        await imageFile.mv(uploadPath);
+
+        let owner;
+        if (req.body.owner) {
+            // Ensure owner is an ObjectId
+            owner = new mongoose.Types.ObjectId(req.body.owner);
+        } else {
+            // Use the session user ID and ensure it's an ObjectId
+            owner = new mongoose.Types.ObjectId(req.session.user._id); // Ensure you're using the correct session field
+        }
+
+        // Create the product object
+        const productData = {
+            name: req.body.name,
+            description: req.body.description,
+            price: parseFloat(req.body.price),
+            quantity: parseInt(req.body.quantity),
+            owner: owner, // Ensure this is the user's ID as ObjectId
+            image: `/uploads/${uniqueFileName}`, // Save relative URL for the image
+            tags: req.body.tags ? [req.body.tags] : [] // Assuming tags come in an array
+        };
+
+        // Create a new product instance
+        const newProduct = new Product(productData);
+
+        // Save the product to the database
+        await newProduct.save();
+
+        // Redirect or send a success response
+        res.redirect('/'); // Adjust to your success page
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error saving product: ' + error.message);
+    }
+});
+
+app.get('/product/:id', async (req, res) => {
+    res.redirect('/404')
 });
 
 

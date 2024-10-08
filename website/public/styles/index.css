@@ -97,3 +97,12 @@ footer{
 footer a{
     color: blue;
 }
+
+#addTagBtn{
+    width: 2.5%;
+    aspect-ratio: 1/1;
+    background-color: #DD00AA77;
+    border: 3px solid black;
+    cursor: pointer;
+    border-radius: 20px;
+}
