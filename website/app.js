@@ -28,8 +28,9 @@ app.use(favicon(path.join(__dirname, 'public', 'assets/favicon.ico')));
 // Static files (e.g., CSS, JS, images)
 app.use(express.static(path.join(__dirname, 'public')));
 
-// File upload middleware (optional, if needed for later)
-app.use(fileUpload());
+app.use(fileUpload({
+    createParentPath: true // Create parent directories if they do not exist
+}));
 
 // Session middleware with MongoDB store
 app.use(session({
