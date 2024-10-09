@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Statistics</title>
+    <link rel="stylesheet" href="/styles/stats.css">
+    <style>
+        /* Basic styling for the dropdown sections */
+        .product-card {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin: 10px 0;
+            padding: 10px;
+            cursor: pointer; /* Change cursor to pointer for clickable items */
+            background-color: #f9f9f9; /* Background color */
+            position: relative; /* For positioning arrow */
+        }
+
+        .sales-log {
+            display: none; /* Hide sales logs by default */
+            padding: 10px; /* Padding for sales logs */
+            border-top: 1px solid #ccc; /* Border for separation */
+        }
+
+        .arrow {
+            position: absolute; /* Position the arrow */
+            right: 30px; /* Align it to the right */
+            top: 20px; /* Center it vertically */
+            transition: transform 0.3s ease; /* Smooth transition for the arrow */
+        }
+
+        .arrow.expanded {
+            transform: rotate(180deg); /* Rotate the arrow when expanded */
+        }
+    </style>
+</head>
+<body>
+    <%- include('partials/header') %>
+    <div class="container">
+        <h1>Sales Statistics</h1>
+
+        <% if (salesDetails.length > 0) { %>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product ID</th>
+                        <th>Owner</th>
+                        <th>Total Sales</th>
+                        <th>Total Revenue</th>
+                        <th>Top Seller</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% salesDetails.forEach(sale => { %>
+                        <tr>
+                            <td><%= sale.productId %></td>
+                            <td><%= sale.ownerName %></td>
+                            <td><%= sale.totalSales %></td>
+                            <td>$<%= sale.totalRevenue %></td>
+                            <td><%= sale.topSeller %></td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        <% } else { %>
+            <p>No sales data available.</p>
+        <% } %>
+
+        <div class="product-summary">
+            <h2>Product Summary</h2>
+            <% salesDetails.forEach(sale => { %>
+                <div class="product-card" onclick="toggleSalesLog(this)">
+                    <h3>Product ID: <%= sale.productId %></h3>
+                    <p>Owner: <%= sale.ownerName %></p>
+                    <p>Total Sales: <%= sale.totalSales %></p>
+                    <p>Total Revenue: $<%= sale.totalRevenue %></p>
+                    <div class="arrow">&#9660;</div> <!-- Down arrow indicator -->
+                    <div class="sales-log">
+                        <p>Sales Logs:</p>
+                        <ul>
+                            <% sale.salesLog.forEach(log => { %>
+                                <li>
+                                    Sold for $<%= log.soldPrice %> on <%= new Date(log.saleDate).toLocaleString() %>
+                                </li>
+                            <% }); %>
+                        </ul>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    </div>
+
+    <script>
+        function toggleSalesLog(element) {
+            const salesLog = element.querySelector('.sales-log');
+            const arrow = element.querySelector('.arrow');
+            if (salesLog.style.display === "none" || salesLog.style.display === "") {
+                salesLog.style.display = "block"; // Show sales log
+                arrow.classList.add('expanded'); // Rotate arrow
+            } else {
+                salesLog.style.display = "none"; // Hide sales log
+                arrow.classList.remove('expanded'); // Rotate arrow back
+            }
+        }
+    </script>
+</body>
+</html>

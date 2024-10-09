@@ -1,0 +1,99 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 90%; /* Adjusted for better mobile responsiveness */
+    max-width: 1200px; /* Maximum width for larger screens */
+    margin: 0 auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+    font-size: 1.8em; /* Slightly smaller font size */
+}
+
+ul{
+    margin-left: 30px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 10px; /* Slightly smaller padding */
+    text-align: left;
+    border: 1px solid #ddd;
+    font-size: 0.9em; /* Smaller font size */
+}
+
+th {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.product-summary {
+    margin-top: 30px;
+}
+
+.product-card {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 10px 0;
+    background-color: #f9f9f9;
+}
+
+.product-card h3 {
+    margin: 0;
+    color: #333;
+    font-size: 1.2em; /* Smaller font size */
+}
+
+.product-card p {
+    margin: 5px 0;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 1.5em; /* Responsive font size for h1 */
+    }
+
+    table {
+        font-size: 0.8em; /* Smaller table font for mobile */
+    }
+
+    th, td {
+        padding: 8px; /* Adjust padding for smaller screens */
+    }
+
+    .product-card {
+        padding: 8px; /* Smaller padding for product cards */
+    }
+
+    .container {
+        padding: 15px; /* Less padding for smaller screens */
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.3em; /* Further reduce h1 size on very small screens */
+    }
+
+    th, td {
+        padding: 6px; /* Further reduce padding on very small screens */
+    }
+}

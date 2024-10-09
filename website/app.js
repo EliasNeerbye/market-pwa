@@ -314,6 +314,67 @@ app.post('/sell/:id', async (req, res) => {
     }
 });
 
+// Route to get sales statistics
+app.get('/stats', async (req, res) => {
+    try {
+        // Fetch all sales logs and populate productId
+        const salesLogs = await SalesLog.find().populate('productId');
+        const productIds = salesLogs.map(log => log.productId._id);
+
+        // Fetch products with their owners
+        const products = await Product.find({ _id: { $in: productIds } }).populate('owner');
+
+        // Prepare sales details for rendering
+        const salesDetails = await Promise.all(products.map(async (product) => {
+            const logsForProduct = salesLogs.filter(log => log.productId._id.toString() === product._id.toString());
+            const totalSales = logsForProduct.length;
+            const totalRevenue = logsForProduct.reduce((sum, log) => sum + log.soldPrice, 0);
+
+            // Initialize seller counts and top seller
+            const sellerCounts = {};
+            let topSellerId = null;
+
+            logsForProduct.forEach(log => {
+                if (log.userId) { // Ensure userId exists in the log
+                    sellerCounts[log.userId] = (sellerCounts[log.userId] || 0) + 1;
+                }
+            });
+
+            // Determine top seller if any sales exist
+            if (totalSales > 0) {
+                topSellerId = Object.keys(sellerCounts).reduce((a, b) => sellerCounts[a] > sellerCounts[b] ? a : b);
+            }
+
+            // Find the user details of the top seller, if one exists
+            const topSeller = topSellerId ? await User.findById(topSellerId) : null;
+
+            return {
+                productId: product.name,
+                ownerName: product.owner.username, // Correctly access the owner's username
+                totalSales: totalSales,
+                totalRevenue: totalRevenue.toFixed(2),
+                topSeller: topSeller ? topSeller.username : 'N/A',
+                salesLog: logsForProduct
+            };
+        }));
+
+        // Send the gathered data to the EJS view
+        res.render('stats', { salesDetails });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server error');
+    }
+});
+
+// Logout Route
+app.post('/logout', (req, res) => {
+    req.session.destroy(err => {
+        if (err) {
+            return res.status(500).send('Could not log out');
+        }
+        res.send('Logged out successfully');
+    });
+});
 
 // 404 handler (Page not found)
 app.use((req, res, next) => {
