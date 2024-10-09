@@ -56,8 +56,8 @@ app.get('/', async (req, res) => {
         const tags = await Tag.find();
         const sentTags = tags.map(tag => ({ username: tag.name, _id: tag._id }));
 
-        // Fetch products from the database
-        const products = await Product.find().populate('tags'); // Populate tags if necessary
+        // Fetch products from the database and exclude those with quantity 0
+        const products = await Product.find({ quantity: { $gt: 0 } }).populate('tags'); // Only get products with quantity > 0
 
         // Get the selected tag ID from the query parameters
         const selectedTagId = req.query.tagSelect;
@@ -224,7 +224,7 @@ app.post('/products/add', async (req, res) => {
             owner = new mongoose.Types.ObjectId(req.body.owner);
         } else {
             // Use the session user ID and ensure it's an ObjectId
-            owner = new mongoose.Types.ObjectId(req.session.user._id); // Ensure you're using the correct session field
+            owner = new mongoose.Types.ObjectId(req.session.user.id); // Ensure you're using the correct session field
         }
 
         // Create the product object
@@ -253,7 +253,65 @@ app.post('/products/add', async (req, res) => {
 });
 
 app.get('/product/:id', async (req, res) => {
-    res.redirect('/404')
+    if(!req.session.user){
+        return res.redirect('/');
+    }
+    const params = req.params;
+    if (!params){
+        return res.redirect('/404');
+    }
+
+    const product = await Product.findById(params.id);
+    res.render('product', { title: product.name,  product });
+});
+
+app.post('/sell/:id', async (req, res) => {
+    if (!req.session.user) {
+        return res.redirect('/');
+    }
+
+    const productId = req.params.id;
+    const { quantitySold, salePrice } = req.body;
+    const userId = new mongoose.Types.ObjectId(req.session.user.id);
+
+    try {
+        // Find the product by ID
+        const product = await Product.findById(productId);
+        if (!product) {
+            return res.redirect('/404');
+        }
+
+        // Validate if the requested quantitySold is not more than the available quantity
+        if (quantitySold > product.quantity) {
+            return res.status(400).send('Not enough quantity available.');
+        }
+
+        // Calculate the average price per unit
+        const averagePrice = salePrice / quantitySold;
+
+        // Reduce the product's quantity
+        product.quantity -= quantitySold;
+        await product.save();
+
+        // Log each sale separately for each item sold
+        for (let i = 0; i < quantitySold; i++) {
+            const salesLog = new SalesLog({
+                userId: userId,
+                productId: productId,
+                soldPrice: averagePrice, // Store the average price per item
+                saleDate: new Date(), // Automatically generated but can override if needed
+            });
+
+            // Save each sales log entry in the database
+            await salesLog.save();
+        }
+
+        // Redirect or return a success message
+        return res.redirect(`/`); // Redirect to home or another page after sale
+    } catch (error) {
+        console.error('Error processing sale:', error);
+        return res.status(500).send('An error occurred while processing the sale.');
+    }
 });
 
 

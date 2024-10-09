@@ -48,6 +48,10 @@
                 const searchText = searchInput.value.toLowerCase();
                 const selectedTagId = tagSelect.value;
 
+                if (searchText == "statistikk") {
+                    return window.location.href = "/stats";
+                }
+
                 products.forEach(product => {
                     const productName = product.querySelector('h2').innerText.toLowerCase();
                     const productTags = product.getAttribute('data-tags').split(',');

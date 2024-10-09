@@ -5,17 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= title %></title>
     <link rel="stylesheet" href="/styles/addTag.css">
-    <script>
-        function addTagInput() {
-            const tagContainer = document.getElementById('tagContainer');
-            const newInput = document.createElement('input');
-            newInput.type = 'text';
-            newInput.name = 'tagNames'; // Same name for grouping in array
-            newInput.placeholder = 'Enter Tag Name';
-            newInput.required = true;
-            tagContainer.appendChild(newInput);
-        }
-    </script>
 </head>
 <body>
     <%- include('partials/header') %>
@@ -29,6 +18,17 @@
             <button type="submit">Add Tags</button>
         </form>
     </main>
+    <script>
+        function addTagInput() {
+            const tagContainer = document.getElementById('tagContainer');
+            const newInput = document.createElement('input');
+            newInput.type = 'text';
+            newInput.name = 'tagNames'; // Same name for grouping in array
+            newInput.placeholder = 'Enter Tag Name';
+            newInput.required = true;
+            tagContainer.appendChild(newInput);
+        }
+    </script>
     <p id="errorMsg"><% if (error) { %><%= error %><% } %></p>
 </body>
 </html>

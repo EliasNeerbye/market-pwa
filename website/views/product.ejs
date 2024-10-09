@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/styles/product.css">
+</head>
+<body>
+    <%- include('partials/header') %>
+    <main>
+        <!-- Display product information -->
+        <section id="product-info">
+            <h1><%= product.name %></h1>
+            <img src="<%= product.image %>" alt="<%= product.name %>">
+            <p><strong>Description:</strong> <%= product.description %></p>
+            <p><strong>Pris:</strong> <%= product.price %> kr</p>
+            <p><strong>Antall:</strong> <%= product.quantity %></p>
+        </section>
+
+        <!-- Sell Product Form -->
+        <section id="sell-product-form">
+            <h2>Sell Product</h2>
+            <form action="/sell/<%= product._id %>" method="POST">
+                <label for="quantitySold">Antall Solgt:</label>
+                <input type="number" id="quantitySold" name="quantitySold" required min="1" value="1" max="<%= product.quantity %>" step="1">
+                <label for="salePrice">Solgt for:</label>
+                <input type="number" id="salePrice" name="salePrice" required min="0" value="<%= product.price %>" step="0.01">
+                <button type="submit">Sell</button>
+            </form>
+        </section>
+    </main>
+</body>
+</html>
