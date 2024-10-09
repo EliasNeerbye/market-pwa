@@ -94,6 +94,12 @@ p{
     text-shadow: -1px 1px 1px black;
 }
 
+header{
+    width: 50% !important;
+    aspect-ratio: 16/9;
+}
+
+
 /* Media Query for Mobile Responsiveness */
 @media (max-width: 1000px) {
     main {

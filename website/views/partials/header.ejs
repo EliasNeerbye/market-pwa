@@ -1,7 +1,9 @@
-<header onclick="window.location.href = '/'">
+<header>
     <link rel="stylesheet" href="/styles/header.css">
-    <link rel="manifest" href="/manifest.json">
     <script>
+        let deferredPrompt;
+
+        // Register the service worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/service-worker.js')
@@ -13,6 +15,51 @@
                     });
             });
         }
+
+        // Function to check if the app is running in standalone mode
+        function isInStandaloneMode() {
+            return window.matchMedia('(display-mode: standalone)').matches || 
+                   window.navigator.standalone === true; // For iOS
+        }
+
+        // Show or hide the download button based on app mode
+        window.addEventListener('DOMContentLoaded', () => {
+            const downloadPWAButton = document.getElementById('downloadPWA');
+            if (!isInStandaloneMode()) {
+                downloadPWAButton.style.display = 'block'; // Show button
+            }
+        });
+
+        // Listen for the beforeinstallprompt event
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent the mini-info bar from appearing on mobile
+            e.preventDefault();
+            // Stash the event so it can be triggered later
+            deferredPrompt = e;
+            const downloadPWAButton = document.getElementById('downloadPWA');
+            downloadPWAButton.style.display = 'block'; // Show button
+        });
+
+        // Function to show the install prompt
+        function showInstallPrompt() {
+            if (deferredPrompt) {
+                // Show the install prompt
+                deferredPrompt.prompt();
+                // Wait for the user to respond to the prompt
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User accepted the A2HS prompt');
+                    } else {
+                        console.log('User dismissed the A2HS prompt');
+                    }
+                    // Clear the deferredPrompt variable, it can only be used once
+                    deferredPrompt = null;
+                });
+            }
+        }
     </script>
-    <img src="/assets/Logo.png" alt="Home">
+    <img src="/assets/Logo.png" alt="Home" onclick="window.location.href = '/'">
+
+    <!-- Button to download PWA -->
+    <button id="downloadPWA" style="display: none;" onclick="showInstallPrompt()">Download PWA</button>
 </header>

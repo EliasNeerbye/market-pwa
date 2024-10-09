@@ -1,26 +1,95 @@
 {
 "name": "Marketeer",
 "short_name": "Marketeer",
-"start_url": "./",
+"start_url": "/",
+"id": "/",
 "display": "standalone",
 "background_color": "#ffffff",
 "theme_color": "#000000",
 "description": "A small place to handle sales for a small market.",
 "icons": [
-    {
-    "src": "assets/pwaAssets/favicon-48.ico",
-    "sizes": "48x48",
-    "type": "image/x-icon"
-    },
-    {
-    "src": "assets/pwaAssets/Logo-192.png",
-    "sizes": "192x192",
-    "type": "image/png"
-    },
-    {
-    "src": "assets/pwaAssets/Logo-512.png",
-    "sizes": "512x512",
-    "type": "image/png"
-    }
-]
+        {
+        "src": "/assets/pwaAssets/favicon-48.ico",
+        "sizes": "48x48",
+        "type": "image/x-icon"
+        },
+        {
+        "src": "/assets/pwaAssets/Logo-192.png",
+        "sizes": "192x192",
+        "type": "image/png"
+        },
+        {
+        "src": "/assets/pwaAssets/Logo-512.png",
+        "sizes": "512x512",
+        "type": "image/png"
+        }
+    ],
+"screenshots": [
+        {
+            "src": "/assets/pwaAssets/ScreenshotWide1.png",
+            "sizes": "1920x1048",
+            "form_factor": "wide",
+            "type": "image/png"
+        },
+        {
+            "src": "/assets/pwaAssets/ScreenshotWide2.png",
+            "sizes": "1920x1048",
+            "form_factor": "wide",
+            "type": "image/png"
+        },
+        {
+            "src": "/assets/pwaAssets/ScreenshotWide3.png",
+            "sizes": "1920x1048",
+            "form_factor": "wide",
+            "type": "image/png"
+        },
+        {
+            "src": "/assets/pwaAssets/ScreenshotWide4.png",
+            "sizes": "1920x1048",
+            "form_factor": "wide",
+            "type": "image/png"
+        },
+        {
+            "src": "/assets/pwaAssets/ScreenshotWide5.png",
+            "sizes": "1920x1048",
+            "form_factor": "wide",
+            "type": "image/png"
+        },
+        {
+            "src": "/assets/pwaAssets/ScreenshotWide6.png",
+            "sizes": "1920x1048",
+            "form_factor": "wide",
+            "type": "image/png"
+        },
+        {
+            "src": "/assets/pwaAssets/ScreenshotThin1.png",
+            "sizes": "1080x1888",
+            "type": "image/png"
+        },
+        {
+            "src": "/assets/pwaAssets/ScreenshotThin2.png",
+            "sizes": "1080x1888",
+            "type": "image/png"
+        },
+        {
+            "src": "/assets/pwaAssets/ScreenshotThin3.png",
+            "sizes": "1080x1888",
+            "type": "image/png"
+        },
+        {
+            "src": "/assets/pwaAssets/ScreenshotThin4.png",
+            "sizes": "1080x1888",
+            "type": "image/png"
+        },
+        {
+            "src": "/assets/pwaAssets/ScreenshotThin5.png",
+            "sizes": "1080x1888",
+            "type": "image/png"
+        },
+        {
+            "src": "/assets/pwaAssets/ScreenshotThin6.png",
+            "sizes": "1080x1888",
+            "type": "image/png"
+        }
+    ]
 }

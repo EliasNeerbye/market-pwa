@@ -1,18 +1,18 @@
 const CACHE_NAME = 'my-pwa-cache-v1';
 const urlsToCache = [
-    '/',
     '/manifest.json',
-    '/assets/favicon.ico', // Ensure these paths are correct
-    '/assets/Logo.png', // Ensure these paths are correct
-    '/public/styles/index.css',
-    '/public/styles/404500.css',
-    '/public/styles/addItem.css',
-    '/public/styles/addTag.css',
-    '/public/styles/header.css',
-    '/public/styles/login.css',
-    '/public/styles/product.css',
-    '/public/styles/stats.css',
+    '/assets/favicon.ico', // Ensure this path is correct
+    '/assets/Logo.png',    // Ensure this path is correct
+    '/styles/index.css',   // No need for `/public/` here
+    '/styles/404500.css',
+    '/styles/addItem.css',
+    '/styles/addTag.css',
+    '/styles/header.css',
+    '/styles/login.css',
+    '/styles/product.css',
+    '/styles/stats.css',
 ];
+
 
 // Install the service worker and cache specified files
 self.addEventListener('install', (event) => {
