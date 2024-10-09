@@ -1,4 +1,18 @@
 <header onclick="window.location.href = '/'">
     <link rel="stylesheet" href="/styles/header.css">
+    <link rel="manifest" href="/manifest.json">
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then((registration) => {
+                        console.log('Service Worker registered with scope:', registration.scope);
+                    })
+                    .catch((error) => {
+                        console.error('Service Worker registration failed:', error);
+                    });
+            });
+        }
+    </script>
     <img src="/assets/Logo.png" alt="Home">
 </header>
