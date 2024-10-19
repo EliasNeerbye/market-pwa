@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Market Event</title>
+    <link rel="stylesheet" href="/styles/addEvent.css">
+</head>
+<body>
+    <%- include("partials/header") %>
+
+    <h1>Add Market Event</h1>
+    <form action="/addMarket" method="POST">
+        <label for="name">Market Name:</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="dateStart">Start Date:</label>
+        <input type="date" id="dateStart" name="dateStart" required>
+
+        <label for="dateEnd">End Date:</label>
+        <input type="date" id="dateEnd" name="dateEnd" required>
+
+        <h3>Select Participants:</h3>
+        <div id="participantsDiv">
+            <% users.forEach(user => { %>
+                <div>
+                    <input type="checkbox" name="participants" value="<%= user._id %>">
+                    <label for="<%= user._id %>"><%= user.username %></label>
+                </div>
+            <% }) %>
+        </div>
+
+        <button type="submit">Add Market</button>
+    </form>
+
+    <button style="display: block; margin: auto;">See all markets</button>
+
+</body>
+</html>

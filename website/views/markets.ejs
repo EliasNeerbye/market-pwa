@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markets</title>
+    <link rel="stylesheet" href="/styles/index.css">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .marketList {
+            width: 90%;
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2.5em;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .marketItem {
+            background-color: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .marketItem:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-5px);
+        }
+
+        .marketItem::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+        }
+
+        .marketName {
+            font-size: 1.8em;
+            color: #3498db;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+
+        .marketDetails {
+            color: #7f8c8d;
+            font-size: 1em;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .marketDetails strong {
+            color: #34495e;
+        }
+
+        .participants {
+            margin-top: 1rem;
+        }
+
+        .participants ul {
+            list-style-type: none;
+            padding-left: 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .participants li {
+            background-color: #e8f0fe;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9em;
+            color: #3498db;
+        }
+
+        .marketActions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .addParticipantForm {
+            display: flex;
+            flex-grow: 1;
+        }
+
+        .addParticipantForm select {
+            flex-grow: 1;
+            padding: 0.75rem;
+            border: 1px solid #bdc3c7;
+            border-radius: 4px;
+            margin-right: 0.5rem;
+            font-size: 1em;
+        }
+
+        .addParticipantForm button,
+        .deleteMarketButton {
+            padding: 0.75rem 1.5rem;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .addParticipantForm button {
+            background-color: #2ecc71;
+        }
+
+        .addParticipantForm button:hover {
+            background-color: #27ae60;
+        }
+
+        .deleteMarketButton {
+            background-color: #e74c3c;
+        }
+
+        .deleteMarketButton:hover {
+            background-color: #c0392b;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        footer a {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background-color: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            font-size: 1.1em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        footer a:hover {
+            background-color: #2980b9;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+    </style>
+</head>
+<body>
+    <%- include('partials/header') %>
+    <div class="marketList">
+        <h1>Markets</h1>
+        <% if (markets.length > 0) { %>
+            <% markets.forEach(market => { %>
+                <div class="marketItem">
+                    <div class="marketName"><%= market.name %></div>
+                    <div class="marketDetails">
+                        <span><strong>Start:</strong> <%= market.date.start.toDateString() %></span>
+                        <span><strong>End:</strong> <%= market.date.end.toDateString() %></span>
+                    </div>
+                    <div class="participants">
+                        <strong>Participants:</strong> 
+                        <% if (market.participants.length > 0) { %>
+                            <ul>
+                                <% market.participants.forEach(participant => { %>
+                                    <li><%= participant.username %></li>
+                                <% }); %>
+                            </ul>
+                        <% } else { %>
+                            <span>No participants</span>
+                        <% } %>
+                    </div>
+                    <div class="marketActions">
+                        <form class="addParticipantForm" action="/markets/<%= market._id %>/addParticipant" method="POST">
+                            <select name="userId" required>
+                                <option value="">Select a user</option>
+                                <% availableUsers.forEach(user => { %>
+                                    <% if (!market.participants.some(p => p._id.toString() === user._id.toString())) { %>
+                                        <option value="<%= user._id %>"><%= user.username %></option>
+                                    <% } %>
+                                <% }); %>
+                            </select>
+                            <button type="submit">Add Participant</button>
+                        </form>
+                        <form class="deleteMarketForm" action="/markets/<%= market._id %>/delete" method="POST">
+                            <button type="submit" class="deleteMarketButton">Delete Market</button>
+                        </form>
+                    </div>
+                </div>
+            <% }); %>
+        <% } else { %>
+            <p>No markets available at the moment.</p>
+        <% } %>
+    </div>
+    <footer>
+        <a href="/addMarket">Create a New Market</a>
+    </footer>
+</body>
+</html>

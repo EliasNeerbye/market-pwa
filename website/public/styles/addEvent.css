@@ -1,0 +1,140 @@
+/* Color Variables */
+:root {
+    --input-focus: #2d8cf0;
+    --font-color: #333;
+    --font-color-sub: #666;
+    --bg-color: #f9f9f9;
+    --main-color: darkmagenta; /* Matching with previous examples */
+    --button-bg-color: #ff5733; /* Bright main color */
+    --button-hover-bg-color: #ff7f50; /* Button hover color */
+}
+
+*{
+    margin: 0;
+    padding: 0;
+}
+
+/* General Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: var(--bg-color); /* Light background */
+    margin: 0;
+    color: var(--font-color);
+    overflow: hidden;
+}
+
+h1 {
+    color: var(--main-color);
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Form Container */
+form {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    max-width: 600px;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Form Group Styles */
+label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: var(--font-color);
+}
+
+input[type="text"],
+input[type="date"] {
+    padding: 12px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    width: 100%;
+    box-sizing: border-box;
+    background-color: var(--bg-color);
+    font-size: 16px;
+    color: var(--font-color);
+    transition: border-color 0.3s ease;
+}
+
+input[type="text"]:focus,
+input[type="date"]:focus {
+    border-color: var(--input-focus);
+    outline: none;
+}
+
+button {
+    background-color: var(--button-bg-color);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 5px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+button:hover {
+    background-color: var(--button-hover-bg-color);
+}
+
+button:active {
+    transform: translateY(2px);
+}
+
+/* Checkbox Styles */
+h3 {
+    margin-bottom: 10px;
+    color: var(--font-color);
+}
+
+/* Error Message */
+#errorMsg {
+    color: red;
+    text-align: center;
+    margin-top: 20px;
+    font-weight: bold;
+}
+
+#participantsDiv{
+    display: flex;
+    gap: 20px;
+}
+
+#participantsDiv div{
+    background-color: var(--bg-color);
+    padding: 10px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    width: 10%;
+}
+
+/* Responsive Styles */
+@media (max-width: 600px) {
+    body{
+        overflow: auto;
+    }
+    h1 {
+        font-size: 24px;
+    }
+
+    form {
+        padding: 15px;
+    }
+
+    input[type="text"],
+    input[type="date"] {
+        font-size: 14px;
+    }
+
+    button {
+        font-size: 16px;
+    }
+}

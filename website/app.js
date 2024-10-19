@@ -47,6 +47,7 @@ const User = require('./models/user');
 const Product = require('./models/product');
 const SalesLog = require('./models/saleslog');
 const Tag = require('./models/tag');
+const Market = require('./models/market');
 
 app.get('/', async (req, res) => {
     if (!req.session.user) {
@@ -54,22 +55,43 @@ app.get('/', async (req, res) => {
     }
 
     try {
+        // Step 1: Fetch the current market
+        const currentMarket = await Market.findOne({ 'date.end': { $gte: new Date() } })
+            .sort({ 'date.start': 1 })
+            .populate('participants');
+
+        // Step 2: Get participant IDs if a market exists
+        const participantIds = currentMarket 
+            ? currentMarket.participants.map(p => p._id.toString()) 
+            : [];
+
+        // Step 3: Fetch tags
         const tags = await Tag.find();
-        const sentTags = tags.map(tag => ({ username: tag.name, _id: tag._id }));
 
-        // Fetch products from the database and exclude those with quantity 0
-        const products = await Product.find({ quantity: { $gt: 0 } }).populate('tags'); // Only get products with quantity > 0
-
-        // Get the selected tag ID from the query parameters
+        // Step 4: Get the selected tag ID from query parameters
         const selectedTagId = req.query.tagSelect;
 
-        // Check if a tag is selected for filtering
-        const filteredProducts = selectedTagId ? products.filter(product => 
-            product.tags.map(tag => tag.toString()).includes(selectedTagId)
-        ) : products;
+        // Step 5: Build the product query
+        let productQuery = { quantity: { $gt: 0 } };
+        if (currentMarket && participantIds.length > 0) {
+            productQuery.owner = { $in: participantIds };
+        }
+        if (selectedTagId) {
+            productQuery.tags = selectedTagId;
+        }
 
-        // Send tags and filtered products to the EJS template
-        res.render('index', { title: 'Home', sentTags, products: filteredProducts, selectedTagId });
+        // Step 6: Fetch filtered products
+        const products = await Product.find(productQuery).populate('tags owner');
+
+        // Step 7: Render the page
+        res.render('index', {
+            title: 'Home',
+            sentTags: tags,
+            products,
+            selectedTagId,
+            currentMarket,
+            participantIds
+        });
     } catch (error) {
         console.error('Error fetching data:', error);
         res.status(500).send('Error fetching data');
@@ -163,6 +185,9 @@ app.post('/login/user', async (req, res) => {
 });
 
 app.post('/tags/add', async (req, res) => {
+    if (!req.session.user){
+        return res.redirect('/login');
+    }
     const { tagNames } = req.body; // Retrieve the array of tag names
 
     // Check if any tag names are provided
@@ -315,8 +340,139 @@ app.post('/sell/:id', async (req, res) => {
     }
 });
 
+
+// GET route to render the form with users
+app.get('/addMarket', async (req, res) => {
+    if (!req.session.user){
+        return res.redirect('/login');
+    }
+    try {
+        const users = await User.find(); // Fetch all users to be displayed as participants
+        res.render('addEvent', { users }); // Render the form, passing users array to the view
+    } catch (err) {
+        console.error("Error fetching users:", err);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
+// GET route for markets page
+app.get('/markets', async (req, res) => {
+    if (!req.session.user) {
+        return res.redirect('/login');
+    }
+    try {
+        // Fetch all market events, populate participants, and sort by start date
+        const markets = await Market.find()
+            .populate('participants')
+            .sort({ 'date.start': 1 }); // Sort markets by start date ascending
+
+        // Fetch all users
+        const availableUsers = await User.find({}, 'username');
+
+        res.render('markets', { 
+            markets, 
+            availableUsers,
+            currentUser: req.session.user 
+        });
+    } catch (err) {
+        console.error("Error fetching markets:", err);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
+app.post('/markets/:id/delete', async (req, res) => {
+    if (!req.session.user) {
+        return res.redirect('/login');
+    }
+    
+    try {
+        const marketId = req.params.id;
+        
+        // Check if the market exists
+        const market = await Market.findById(marketId);
+        if (!market) {
+            return res.status(404).send("Market not found");
+        }
+        
+        // Delete the market
+        await Market.findByIdAndDelete(marketId);
+        
+        // Redirect back to the markets page
+        res.redirect('/markets');
+    } catch (err) {
+        console.error("Error deleting market:", err);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
+// POST route for adding a participant to a market
+app.post('/markets/:marketId/addParticipant', async (req, res) => {
+    if (!req.session.user) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const { marketId } = req.params;
+    const { userId } = req.body;
+
+    try {
+        // Find the market and update its participants
+        const market = await Market.findById(marketId);
+        if (!market) {
+            return res.status(404).json({ error: 'Market not found' });
+        }
+
+        // Check if the user is already a participant
+        if (market.participants.includes(userId)) {
+            return res.status(400).json({ error: 'User is already a participant' });
+        }
+
+        // Add the user to the participants array
+        market.participants.push(userId);
+        await market.save();
+
+        // Redirect back to the markets page
+        res.redirect('/markets');
+    } catch (err) {
+        console.error("Error adding participant:", err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+// POST route to add a new market event
+app.post('/addMarket', async (req, res) => {
+    if (!req.session.user){
+        return res.redirect('/login');
+    }
+    const { name, dateStart, dateEnd, participants } = req.body;
+
+    try {
+        // Create new market entry
+        const newMarket = new Market({
+            name,
+            date: {
+                start: new Date(dateStart),
+                end: new Date(dateEnd),
+            },
+            participants: Array.isArray(participants) 
+                ? participants.map(id => new mongoose.Types.ObjectId(id)) // Use 'new' with ObjectId
+                : participants ? [new mongoose.Types.ObjectId(participants)] : [] // Wrap single participant in an array
+        });
+
+        await newMarket.save(); // Save to the database
+        res.redirect('/markets'); // Redirect to the markets listing page (or wherever you want)
+    } catch (err) {
+        console.error("Error adding market:", err);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
+
+
 // Route to get sales statistics
 app.get('/stats', async (req, res) => {
+    if (!req.session.user){
+        return res.redirect('/login');
+    }
     try {
         // Fetch all sales logs and populate productId
         const salesLogs = await SalesLog.find().populate('productId');
@@ -365,16 +521,6 @@ app.get('/stats', async (req, res) => {
         console.error(error);
         res.status(500).send('Server error');
     }
-});
-
-// Logout Route
-app.post('/logout', (req, res) => {
-    req.session.destroy(err => {
-        if (err) {
-            return res.status(500).send('Could not log out');
-        }
-        res.send('Logged out successfully');
-    });
 });
 
 // 404 handler (Page not found)

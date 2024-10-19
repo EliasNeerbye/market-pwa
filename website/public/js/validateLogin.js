@@ -21,27 +21,15 @@ form.addEventListener('submit', (event) => {
     } else if (username.length < 3 || username.length > 15) {
         valid = false;
         errorMsg.textContent = 'Username must be between 3 and 15 characters long.';
-    } else if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-        valid = false;
-        errorMsg.textContent = 'Username can only contain letters, numbers, and underscores.';
     }
 
-    // Password Validation
+    // Password Validation (reduced checks)
     if (/\s/.test(password)) {
         valid = false;
         errorMsg.textContent = 'Password should not contain spaces.';
     } else if (password.length < 8) {
         valid = false;
         errorMsg.textContent = 'Password must be at least 8 characters long.';
-    } else if (!/[A-Z]/.test(password)) {
-        valid = false;
-        errorMsg.textContent = 'Password must contain at least one uppercase letter.';
-    } else if (!/[a-z]/.test(password)) {
-        valid = false;
-        errorMsg.textContent = 'Password must contain at least one lowercase letter.';
-    } else if (!/[0-9]/.test(password)) {
-        valid = false;
-        errorMsg.textContent = 'Password must contain at least one number.';
     }
 
     // If valid, submit the form data (or proceed to AJAX submission)

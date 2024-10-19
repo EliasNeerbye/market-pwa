@@ -1,76 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title><%= title %></title>
-        <link rel="manifest" href="/manifest.json">
-        <link rel="stylesheet" href="/styles/index.css">
-        <style>
-            .hidden {
-                display: none;
-            }
-        </style>
-    </head>
-    <body>
-        <%- include('partials/header') %>
-        <main>
-            <section id="search">
-                <input type="text" id="searchInput" placeholder="Search...">
-                <select id="tagSelect">
-                    <option value="">Select a tag</option>
-                    <% sentTags.forEach(element => { %>
-                        <option value="<%= element._id %>"><%= element.username %></option>
-                    <% }); %>
-                </select>
-                <button id="addTagBtn" onclick="window.location.href='/addTag'">+</button>
-            </section>
-            <section id="display">
-                <% products.forEach(product => { %>
-                    <article class="productDisplay" data-tags="<%= product.tags.map(tag => tag._id).join(',') %>" onclick="location.href='/product/<%= product._id %>'" style="cursor: pointer;">
-                        <h2><%= product.name %></h2>
-                        <div><img src="<%= product.image %>" alt="Image of product" style="max-width: 100%;"></div>
-                        <input type="hidden" name="hiddenTag" value="<%= product.tags.map(tag => tag._id).join(',') %>">
-                    </article>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="/styles/index.css">
+    <style>
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <%- include('partials/header') %>
+    <main>
+        <section id="search">
+            <input type="text" id="searchInput" placeholder="Search...">
+            <select id="tagSelect">
+                <option value="">Select a tag</option>
+                <% sentTags.forEach(tag => { %>
+                    <option value="<%= tag._id %>" <%= selectedTagId === tag._id.toString() ? 'selected' : '' %>><%= tag.name %></option>
                 <% }); %>
-            </section>
-        </main>
-        <footer>
-            <a href="/addItem">Add a new item</a>
-        </footer>
-        
-        <script>
-            const searchInput = document.getElementById('searchInput');
-            const tagSelect = document.getElementById('tagSelect');
-            const products = document.querySelectorAll('.productDisplay');
+            </select>
+            <button id="addTagBtn" onclick="window.location.href='/addTag'">+</button>
+        </section>
 
-            // Function to filter products
-            function filterProducts() {
-                const searchText = searchInput.value.toLowerCase();
-                const selectedTagId = tagSelect.value;
+        <!-- Market Information Section -->
+        <section id="marketInfo">
+            <% if (currentMarket) { %>
+                <h2>Current Market: <%= currentMarket.name %></h2>
+                <p>From: <%= new Date(currentMarket.date.start).toLocaleDateString() %> To: <%= new Date(currentMarket.date.end).toLocaleDateString() %></p>
+            <% } else { %>
+                <p>No active market at the moment.</p>
+            <% } %>
+            <button id="createMarketBtn" onclick="window.location.href='/addMarket'">Create New Market</button>
+            <button id="viewMarketsBtn" onclick="window.location.href='/markets'">View All Markets</button>
+        </section>
 
-                if (searchText == "statistikk") {
-                    return window.location.href = "/stats";
-                }
+        <section id="display">
+            <% products.forEach(product => { %>
+                <article class="productDisplay" 
+                        data-tags="<%= (product.tags || []).map(tag => tag._id).join(',') %>" 
+                        data-owner="<%= product.owner ? product.owner._id : '' %>"
+                        onclick="location.href='/product/<%= product._id %>'" 
+                        style="cursor: pointer;">
+                    <h2><%= product.name %></h2>
+                    <div><img src="<%= product.image %>" alt="Image of <%= product.name %>" style="max-width: 100%;"></div>
+                    <p style="font-size: 1.25rem;">Price: <%= product.price %> NOK</p>
+                    <p>Quantity: <%= product.quantity %></p>
+                    <input type="hidden" name="hiddenTag" value="<%= (product.tags || []).map(tag => tag._id).join(',') %>">
+                </article>
+            <% }); %>
+        </section>
+    </main>
+    <footer>
+        <a href="/addItem">Add a new item</a>
+    </footer>
+    
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const tagSelect = document.getElementById('tagSelect');
+        const products = document.querySelectorAll('.productDisplay');
+        const participantIds = <%- JSON.stringify(participantIds || []) %>;
 
-                products.forEach(product => {
-                    const productName = product.querySelector('h2').innerText.toLowerCase();
-                    const productTags = product.getAttribute('data-tags').split(',');
+        // Function to filter products
+        function filterProducts() {
+            const searchText = searchInput.value.toLowerCase();
+            const selectedTagId = tagSelect.value;
 
-                    const matchesSearch = productName.includes(searchText);
-                    const matchesTag = selectedTagId ? productTags.includes(selectedTagId) : true;
-
-                    if (matchesSearch && matchesTag) {
-                        product.classList.remove('hidden');
-                    } else {
-                        product.classList.add('hidden');
-                    }
-                });
+            if (searchText === "statistikk") {
+                return window.location.href = "/stats";
             }
 
-            // Event listeners
-            searchInput.addEventListener('input', filterProducts);
-            tagSelect.addEventListener('change', filterProducts);
-        </script>
-    </body>
+            products.forEach(product => {
+                const productName = product.querySelector('h2').innerText.toLowerCase();
+                const productTags = product.getAttribute('data-tags').split(',').filter(Boolean);
+                const productOwner = product.getAttribute('data-owner');
+
+                const matchesSearch = productName.includes(searchText);
+                const matchesTag = selectedTagId ? productTags.includes(selectedTagId) : true;
+                const matchesParticipant = participantIds.length === 0 || participantIds.includes(productOwner);
+
+                if (matchesSearch && matchesTag && matchesParticipant) {
+                    product.classList.remove('hidden');
+                } else {
+                    product.classList.add('hidden');
+                }
+            });
+        }
+
+        // Event listeners
+        searchInput.addEventListener('input', filterProducts);
+        tagSelect.addEventListener('change', filterProducts);
+
+        // Initial filter on page load
+        filterProducts();
+    </script>
+</body>
 </html>

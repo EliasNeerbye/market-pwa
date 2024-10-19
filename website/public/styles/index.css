@@ -1,53 +1,80 @@
-main{
+main {
     width: 100%;
-    height: 80%;
+    height: calc(80vh - 60px); /* Adjust height to account for footer and other elements */
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 30px;
+    overflow: hidden; /* Hide overflow */
 }
 
-#search{
+#search {
     display: flex;
     width: 65%;
     justify-content: space-between;
     align-items: center;
+    background-color: #f8f8f8; /* Light background for search section */
+    padding: 10px; /* Add padding for better aesthetics */
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
 }
 
-#searchInput{
+#searchInput {
     width: 60%;
     background-color: transparent;
     border: 0;
-    border-bottom: 1px solid black;
-    color: black;
-    padding: 5px 2.5px;
+    border-bottom: 2px solid #333; /* Thicker border for emphasis */
+    color: #333;
+    padding: 8px 2.5px; /* More padding for a better touch target */
+    transition: border-bottom-color 0.3s;
 }
 
-#searchInput:focus{
+#searchInput:focus {
     outline: 0;
+    border-bottom-color: #DD00AA; /* Change border color on focus */
 }
 
-#tagSelect{
+#tagSelect {
     width: 30%;
     background-color: #DD00AA77;
-    padding: 5px;
-    border: 3px solid;
+    padding: 8px;
+    border: 2px solid #333; /* Thicker border */
     border-radius: 6px;
 }
 
+#marketInfo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 65%;
+}
 
-#display{
+#marketInfo h2 {
+    margin: 0;
+    font-size: 1.5rem; /* Increased font size for better visibility */
+    color: #444; /* Darker color for contrast */
+}
+
+#marketInfo p {
+    margin: 0;
+    font-size: 1rem; /* Ensure readability */
+    color: #666; /* Lighter color for less emphasis */
+}
+
+#display {
     width: 90%;
-    max-height: 80%;
+    max-height: calc(80vh - 200px); /* Allow scrolling within this section */
     margin: 0 auto;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 20px;
-    overflow-y: auto;
+    overflow-y: auto; /* Enable vertical scrolling */
+    overflow-x: hidden; /* Prevent horizontal scrolling */
 }
 
-.productDisplay{
+.productDisplay {
     width: 15%;
     min-width: 105px;
     flex-grow: 1;
@@ -58,14 +85,20 @@ main{
     justify-content: center;
     align-items: center;
     gap: 10px;
-    background-color: #00000005;
+    background-color: #ffffff; /* White background for product display */
     padding: 20px 5px;
     border-radius: 8px;
-    border: 1px dotted;
-    cursor: pointer;
+    border: 1px solid #DD00AA; /* Solid border for better visibility */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Shadow for depth */
+    transition: transform 0.2s, box-shadow 0.2s; /* Add a hover effect */
 }
 
-.productDisplay p{
+.productDisplay:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Darker shadow on hover */
+}
+
+.productDisplay p {
     display: block;
     text-align: center;
     width: 100%;
@@ -73,7 +106,7 @@ main{
     font-weight: bold;
 }
 
-.productDisplay div{
+.productDisplay div {
     width: 80%;
     height: 75%;
     display: flex;
@@ -81,12 +114,12 @@ main{
     align-items: center;
 }
 
-.productDisplay div img{
+.productDisplay div img {
     max-width: 100%;
     max-height: 100%;
 }
 
-footer{
+footer {
     display: flex;
     width: 50%;
     margin: auto;
@@ -94,15 +127,46 @@ footer{
     align-items: center;
 }
 
-footer a{
+footer a {
     color: blue;
 }
 
-#addTagBtn{
+#addTagBtn {
     width: 2.5%;
     aspect-ratio: 1/1;
     background-color: #DD00AA77;
     border: 3px solid black;
     cursor: pointer;
     border-radius: 20px;
+}
+
+#createMarketBtn {
+    background-color: #DD00AA77;
+    border: 3px solid black;
+    padding: 10px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    color: black;
+    transition: background-color 0.3s;
+}
+
+#createMarketBtn:hover {
+    background-color: #DD00AA99;
+}
+
+#viewMarketsBtn {
+    background-color: #007BFF; /* Blue button for visibility */
+    color: white; /* White text for contrast */
+    border: none; /* No border */
+    padding: 10px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+    text-align: center; /* Center text */
+}
+
+#viewMarketsBtn:hover {
+    background-color: #0056b3; /* Darken on hover */
 }
