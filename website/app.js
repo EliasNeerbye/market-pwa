@@ -543,6 +543,96 @@ app.get('/stats', async (req, res) => {
     }
 });
 
+app.get('/profile', async (req, res) => {
+    if (!req.session.user) {
+        return res.redirect('/login');
+    }
+
+    try {
+        const user = await User.findById(req.session.user.id);
+        const userItems = await Product.find({ owner: user._id }).populate('tags');
+
+        res.render('profile', {
+            title: 'User Profile',
+            user: user,
+            items: userItems
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server error');
+    }
+});
+
+app.get('/profile/item/:id', async (req, res) => {
+    if (!req.session.user) {
+        return res.redirect('/login');
+    }
+
+    try {
+        const item = await Product.findById(req.params.id).populate('tags');
+        if (!item || item.owner.toString() !== req.session.user.id) {
+            return res.status(404).send('Item not found or unauthorized');
+        }
+
+        const allTags = await Tag.find();
+
+        res.render('editItem', {
+            title: 'Edit Item',
+            item: item,
+            allTags: allTags
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server error');
+    }
+});
+
+app.put('/profile/item/:id', async (req, res) => {
+    if (!req.session.user) {
+        return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    try {
+        const item = await Product.findById(req.params.id);
+        if (!item || item.owner.toString() !== req.session.user.id) {
+            return res.status(404).json({ message: 'Item not found or unauthorized' });
+        }
+
+        // Update item fields
+        item.name = req.body.name;
+        item.description = req.body.description;
+        item.price = parseFloat(req.body.price);
+        item.quantity = parseInt(req.body.quantity);
+        item.tags = req.body.tags;
+
+        // Handle image update if a new image is uploaded
+        if (req.files && req.files.image) {
+            const imageFile = req.files.image;
+            const uniqueFileName = `${uuidv4()}_${imageFile.name}`;
+            const uploadPath = path.join(__dirname, 'public', 'uploads', uniqueFileName);
+
+            await sharp(imageFile.data)
+                .resize({
+                    width: 1200,
+                    height: 1200,
+                    fit: sharp.fit.inside,
+                    withoutEnlargement: true
+                })
+                .jpeg({ quality: 80 })
+                .toFile(uploadPath);
+
+            item.image = `/uploads/${uniqueFileName}`;
+        }
+
+        await item.save();
+        res.json({ message: 'Item updated successfully', item: item });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+
 // 404 handler (Page not found)
 app.use((req, res, next) => {
     res.status(404).render('404', { title: '404: Not Found' });

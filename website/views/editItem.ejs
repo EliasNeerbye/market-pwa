@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/styles/profile.css">
+    <style>
+        form {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 5px;
+            margin-top: 5px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <%- include('partials/header') %>
+
+    <main>
+        <h1>Edit Item: <%= item.name %></h1>
+        <form id="editItemForm">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" value="<%= item.name %>" required>
+
+            <label for="description">Description:</label>
+            <textarea id="description" name="description"><%= item.description %></textarea>
+
+            <label for="price">Price:</label>
+            <input type="number" id="price" name="price" value="<%= item.price %>" step="0.01" required>
+
+            <label for="quantity">Quantity:</label>
+            <input type="number" id="quantity" name="quantity" value="<%= item.quantity %>" required>
+
+            <label for="image">Image:</label>
+            <input type="file" id="image" name="image">
+
+            <label for="tags">Tags:</label>
+            <select id="tags" name="tags" multiple>
+                <% allTags.forEach(tag => { %>
+                    <option value="<%= tag._id %>" <%= item.tags.some(t => t._id.toString() === tag._id.toString()) ? 'selected' : '' %>><%= tag.name %></option>
+                <% }); %>
+            </select>
+
+            <button type="submit">Update Item</button>
+        </form>
+    </main>
+
+    <script>
+        document.getElementById('editItemForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            
+            fetch('/profile/item/<%= item._id %>', {
+                method: 'PUT',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message === 'Item updated successfully') {
+                    alert('Item updated successfully');
+                    window.location.href = '/profile';
+                } else {
+                    alert('Error updating item');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>
