@@ -9,6 +9,7 @@ const path = require('path');
 require('dotenv').config();
 const favicon = require('serve-favicon');
 const { v4: uuidv4 } = require('uuid');
+const sharp = require('sharp');
 
 const app = express();
 
@@ -29,7 +30,8 @@ app.use(favicon(path.join(__dirname, 'public', 'assets/favicon.ico')));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(fileUpload({
-    createParentPath: true // Create parent directories if they do not exist
+    createParentPath: true, // Create parent directories if they do not exist
+    limits: { fileSize: 50 * 1024 * 1024 }, // 50MB limit
 }));
 
 // Session middleware with MongoDB store
@@ -251,8 +253,16 @@ app.post('/products/add', async (req, res) => {
         const uniqueFileName = `${uuidv4()}_${imageFile.name}`;
         const uploadPath = path.join(__dirname, 'public', 'uploads', uniqueFileName);
 
-        // Move the uploaded file to the specified directory
-        await imageFile.mv(uploadPath);
+        // Process and save the image
+        await sharp(imageFile.data)
+            .resize({
+                width: 1200, // Max width
+                height: 1200, // Max height
+                fit: sharp.fit.inside, // Maintain aspect ratio
+                withoutEnlargement: true // Don't enlarge if smaller
+            })
+            .jpeg({ quality: 80 }) // Compress as JPEG
+            .toFile(uploadPath);
 
         let owner;
         if (req.body.owner) {
