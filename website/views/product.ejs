@@ -23,9 +23,9 @@
         <section id="sell-product-form">
             <h2>Sell Product</h2>
             <form action="/sell/<%= product._id %>" method="POST">
-                <label for="quantitySold">Antall Solgt:</label>
+                <label for="quantitySold">Antall Solgt (til én person):</label>
                 <input type="number" id="quantitySold" name="quantitySold" required min="1" value="1" max="<%= product.quantity %>" step="1">
-                <label for="salePrice">Solgt for:</label>
+                <label for="salePrice">Solgt for (totalt for én person):</label>
                 <input type="number" id="salePrice" name="salePrice" required min="0" value="<%= product.price %>" step="0.01">
                 <button type="submit">Sell</button>
             </form>

@@ -170,3 +170,17 @@ footer a {
 #viewMarketsBtn:hover {
     background-color: #0056b3; /* Darken on hover */
 }
+
+@media only screen and (max-width: 1000px) {
+    #search{
+        width: 90%;
+    }
+
+    #searchInput{
+        width: 40%;
+    }
+
+    #addTagBtn {
+        width: 10%;
+    }
+}

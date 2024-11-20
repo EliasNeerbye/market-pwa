@@ -196,27 +196,37 @@ app.post('/tags/add', async (req, res) => {
     }
 
     try {
+        // Ensure tagNames is always an array, even if only one tag is provided
+        const tagNamesArray = Array.isArray(tagNames) ? tagNames : [tagNames];
+    
         // Create an array to hold the tags
-        const tagsToAdd = tagNames.map(tagName => ({
+        const tagsToAdd = tagNamesArray.map(tagName => ({
             name: tagName.trim() // Trim whitespace from the tag name
         }));
-
+    
         // Check for existing tags to prevent duplicates
         const existingTags = await Tag.find({ name: { $in: tagsToAdd.map(tag => tag.name) } }).lean();
         const existingTagNames = existingTags.map(tag => tag.name);
-
+    
         // Filter out tags that already exist
         const newTags = tagsToAdd.filter(tag => !existingTagNames.includes(tag.name));
-
+    
         // Save new tags to the database
         if (newTags.length > 0) {
             await Tag.insertMany(newTags);
         }
-
+    
         // Provide feedback on existing tags that were not added
         const errorMsg = existingTagNames.length > 0 ? `Tags already exist: ${existingTagNames.join(', ')}` : null;
-
-        res.render('addTag', { title: 'Add Tags', error: errorMsg });
+    
+        // Provide feedback on successfully added tags
+        const successMsg = newTags.length > 0 ? `Successfully added: ${newTags.map(tag => tag.name).join(', ')}` : null;
+    
+        res.render('addTag', { 
+            title: 'Add Tags', 
+            error: errorMsg, 
+            success: successMsg 
+        });
     } catch (error) {
         console.error('Error adding tags:', error);
         res.render('addTag', { title: 'Add Tags', error: 'Error adding tags. Please try again.' });

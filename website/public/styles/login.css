@@ -117,7 +117,10 @@ header{
     }
 
     button {
-        width: 80%;
+        width: 95%;
+        height: 60%;
+        font-size: smaller;
+        padding: 0px 10px;
     }
 
     p {
