@@ -34,6 +34,12 @@ app.use(fileUpload({
     limits: { fileSize: 50 * 1024 * 1024 }, // 50MB limit
 }));
 
+// Ensure uploads directory exists
+const uploadsDir = path.join(__dirname, 'public', 'uploads');
+if (!fs.existsSync(uploadsDir)){
+    fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
 // Session middleware with MongoDB store
 app.use(session({
     secret: process.env.SESSION_SECRET, // Loaded from the .env file
@@ -247,30 +253,34 @@ app.post('/products/add', async (req, res) => {
             return res.status(400).send('No files were uploaded.');
         }
 
-        const imageFile = req.files.image; // Assuming the input name is 'image'
+        const imageFile = req.files.image;
         
-        // Generate a unique filename by appending a UUID
+        // Generate a unique filename
         const uniqueFileName = `${uuidv4()}_${imageFile.name}`;
         const uploadPath = path.join(__dirname, 'public', 'uploads', uniqueFileName);
+
+        // Ensure the uploads directory exists (double-check just in case)
+        const uploadsDir = path.join(__dirname, 'public', 'uploads');
+        if (!fs.existsSync(uploadsDir)){
+            fs.mkdirSync(uploadsDir, { recursive: true });
+        }
 
         // Process and save the image
         await sharp(imageFile.data)
             .resize({
-                width: 1200, // Max width
-                height: 1200, // Max height
-                fit: sharp.fit.inside, // Maintain aspect ratio
-                withoutEnlargement: true // Don't enlarge if smaller
+                width: 1200,
+                height: 1200,
+                fit: sharp.fit.inside,
+                withoutEnlargement: true
             })
-            .jpeg({ quality: 80 }) // Compress as JPEG
+            .jpeg({ quality: 80 })
             .toFile(uploadPath);
 
         let owner;
         if (req.body.owner) {
-            // Ensure owner is an ObjectId
             owner = new mongoose.Types.ObjectId(req.body.owner);
         } else {
-            // Use the session user ID and ensure it's an ObjectId
-            owner = new mongoose.Types.ObjectId(req.session.user.id); // Ensure you're using the correct session field
+            owner = new mongoose.Types.ObjectId(req.session.user.id);
         }
 
         // Create the product object
@@ -279,21 +289,18 @@ app.post('/products/add', async (req, res) => {
             description: req.body.description,
             price: parseFloat(req.body.price),
             quantity: parseInt(req.body.quantity),
-            owner: owner, // Ensure this is the user's ID as ObjectId
-            image: `/uploads/${uniqueFileName}`, // Save relative URL for the image
-            tags: req.body.tags ? [req.body.tags] : [] // Assuming tags come in an array
+            owner: owner,
+            image: `/uploads/${uniqueFileName}`,
+            tags: req.body.tags ? [req.body.tags] : []
         };
 
-        // Create a new product instance
+        // Create and save the new product
         const newProduct = new Product(productData);
-
-        // Save the product to the database
         await newProduct.save();
 
-        // Redirect or send a success response
-        res.redirect('/'); // Adjust to your success page
+        res.redirect('/');
     } catch (error) {
-        console.error(error);
+        console.error('Error saving product:', error);
         res.status(500).send('Error saving product: ' + error.message);
     }
 });
