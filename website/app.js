@@ -10,6 +10,7 @@ require('dotenv').config();
 const favicon = require('serve-favicon');
 const { v4: uuidv4 } = require('uuid');
 const sharp = require('sharp');
+const fs = require('fs');
 
 const app = express();
 
