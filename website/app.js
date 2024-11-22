@@ -433,6 +433,31 @@ app.post('/markets/:id/delete', async (req, res) => {
     }
 });
 
+app.delete('/profile/item/:id', async (req, res) => {
+    if (!req.session.user) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+    
+    const itemId = req.params.id;
+    const item = await Product.findById(itemId);
+    const user = await User.findById(req.session.user.id)
+    if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+    }
+
+    if (item.owner.toString() == user._id.toString()) {
+        const itemImg = item.image;
+        await fs.unlink(path.join(__dirname, 'public', itemImg), (err) => {
+            if (err) console.error(`Error deleting image: ${err}`);
+        });
+        await Product.findByIdAndDelete(itemId);
+        res.json({ message: 'Item deleted successfully' });
+        return;
+    } else {
+        res.status(403).json({ error: 'Unauthorized' });
+    }
+});
+
 // POST route for adding a participant to a market
 app.post('/markets/:marketId/addParticipant', async (req, res) => {
     if (!req.session.user) {
