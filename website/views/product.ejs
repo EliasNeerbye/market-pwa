@@ -24,12 +24,18 @@
             <h2>Sell Product</h2>
             <form action="/sell/<%= product._id %>" method="POST">
                 <label for="quantitySold">Antall Solgt (til én person):</label>
-                <input type="number" id="quantitySold" name="quantitySold" required min="1" value="1" max="<%= product.quantity %>" step="1">
+                <input type="number" id="quantitySold" name="quantitySold" required min="1" value="1" max="<%= product.quantity %>" step="1" oninput="changeTotal(this)">
                 <label for="salePrice">Solgt for (totalt for én person):</label>
                 <input type="number" id="salePrice" name="salePrice" required min="0" value="<%= product.price %>" step="0.01">
                 <button type="submit">Sell</button>
             </form>
         </section>
+        <script>
+            function changeTotal(input) {
+                var total = input.value * <%= product.price %>;
+                document.getElementById('salePrice').value = total.toFixed(2);
+            }
+        </script>
     </main>
 </body>
 </html>
