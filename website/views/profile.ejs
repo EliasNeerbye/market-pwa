@@ -42,7 +42,7 @@
         <ul class="item-list">
             <% items.forEach(item => { %>
                 <li>
-                    <%= item.name %> - $<%= item.price.toFixed(2) %>
+                    <%= item.name %> - <%= item.price.toFixed(2) %>
                     <a href="/profile/item/<%= item._id %>" class="btn btn-edit">Edit</a>
                     <button onclick="deleteItem('<%= item._id %>')" class="btn btn-delete">Delete</button>
                 </li>

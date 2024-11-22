@@ -58,7 +58,7 @@
                             <td><%= sale.productId %></td>
                             <td><%= sale.ownerName %></td>
                             <td><%= sale.totalSales %></td>
-                            <td>$<%= sale.totalRevenue %></td>
+                            <td><%= sale.totalRevenue %></td>
                             <td><%= sale.topSeller %></td>
                         </tr>
                     <% }); %>
@@ -75,14 +75,14 @@
                     <h3>Product ID: <%= sale.productId %></h3>
                     <p>Owner: <%= sale.ownerName %></p>
                     <p>Total Sales: <%= sale.totalSales %></p>
-                    <p>Total Revenue: $<%= sale.totalRevenue %></p>
+                    <p>Total Revenue: <%= sale.totalRevenue %></p>
                     <div class="arrow">&#9660;</div> <!-- Down arrow indicator -->
                     <div class="sales-log">
                         <p>Sales Logs:</p>
                         <ul>
                             <% sale.salesLog.forEach(log => { %>
                                 <li>
-                                    Sold for $<%= log.soldPrice %> on <%= new Date(log.saleDate).toLocaleString() %>
+                                    Sold for <%= log.soldPrice %> on <%= new Date(log.saleDate).toLocaleString() %>
                                 </li>
                             <% }); %>
                         </ul>
